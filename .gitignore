@@ -1,0 +1,10 @@
+.idea/
+node_modules/
+.wepycache
+dist/
+*-lock.json
+*.lock
+*.log
+.vscode
+config.yaml
+.eslintcache

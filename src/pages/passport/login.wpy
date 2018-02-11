@@ -1,0 +1,317 @@
+<template>
+    <div class="box">
+        <image class="login_bg" mode="widthFix" src="../../assets/img/bg.jpg"></image>
+        <div class="logo" wx:if="{{company.logo_url != ''}}">
+            <image class="user_logo" mode="widthFix" src="{{company.logo_url}}" @error="imgError" />
+        </div>
+        <div class="table login_box">
+            <view hidden="{{!company.name}}" class="tr">
+                <div class="td">
+                    <div class="input_box input_box_d table">
+                        <div class="td left">
+                            <span class="iconfont icon-home"></span>
+                        </div>
+                        <div class="td">
+                            <span class="sname">{{company.name ? company.name : ''}}</span>
+                        </div>
+                    </div>
+                </div>
+            </view>
+            <div class="tr">
+                <div class="td">
+                    <div class="input_box input_box_a table">
+                        <div class="td left">
+                            <span class="iconfont icon-iconfontyonghu"></span>
+                        </div>
+                        <div class="td">
+                            <input class="input" cursor-spacing="30" id="username" @blur="fetchShops" value="{{ input.username }}" @input="input" type="text" placeholder-style="color:#9ad2f9;" placeholder="用户名" />
+                        </div>
+                        <div class="td right">
+                            <span class="iconfont icon-06 translucent" @tap="clear('username')"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="td">
+                    <div class="input_box input_box_b table">
+                        <div class="td left">
+                            <span class="iconfont icon-mima-copy"></span>
+                        </div>
+                        <div class="td" style="{{ password.isCipher ? 'display:none' : 'display:block' }}">
+                            <input class="input" cursor-spacing="30" value="{{ input.password }}" id="password" @input="input" type="text" placeholder-style="color:#9ad2f9;" placeholder="密码" />
+                        </div>
+                        <div class="td" style="{{ password.isCipher ? 'display:block' : 'display:none' }}">
+                            <input class="input" cursor-spacing="30" value="{{ input.password }}" id="password" @input="input" type="password" placeholder-style="color:#9ad2f9;" placeholder="密码" />
+                        </div>
+                        <div class="td right">
+                            <span class="{{ password.isCipher ? 'iconfont icon-yanjing translucent' : 'iconfont icon-yanjing1 translucent' }}" @tap="switchPassword"></span>
+                        </div>
+                        <div class="td right">
+                            <span class="iconfont icon-06 translucent" @tap="clear('password')"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="td">
+                    <div class="input_box input_box_c table">
+                        <div class="td left">
+                            <span class="iconfont icon-fangzi"></span>
+                        </div>
+                        <div class="td focustext">
+                            <picker @change="selectShop" value="{{ index }}" range="{{ shops }}" range-key="shop_name">
+                                <span class="input">{{ selectedShop.shop_name }}</span>
+                            </picker>
+                        </div>
+                        <div class="td right">
+                            <span class="iconfont icon-xiala translucent"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tr">
+                <div class="td">
+                    <button class="btn" disabled="{{ !input.isUser || !input.isPass }}" type="defaule" @tap="confirm">登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import Input from '../../mixins/input'
+    import {
+        Auth
+    } from '../../api'
+    import page from '../authenticate'
+    export default class Login extends page {
+        config = {
+            navigationBarBackgroundColor: '#4373D1',
+            navigationBarTextStyle: 'block',
+            navigationBarTitleText: '登录',
+            backgroundColor: '#ffffff',
+            backgroundTextStyle: 'dark',
+            disableScroll: false
+        }
+        data = {
+            historyUsername: '',
+            password: {
+                isCipher: true
+            },
+            selectedShop: {
+                shop_id: 0,
+                shop_name: '请选择门店...'
+            },
+            shops: [{
+                shop_id: 0,
+                shop_name: '请选择门店...'
+            }],
+            company: {
+                name: '',
+                logo_url: '../../assets/img/ueosoft.png'
+            }
+        }
+        mixins = [Input]
+        watch = {
+            'input'(val) {
+                this.input.isUser = val.username
+                this.input.isPass = val.password
+                this.$apply()
+            }
+        }
+        validate() {
+            const rules = [{
+                value: this.input.username,
+                method: 'required|rangeLength:2,20',
+                message: '用户名不得为空|用户名格式不正确'
+            },
+            {
+                value: this.input.password,
+                method: 'required|rangeLength:6,16',
+                message: '密码不得为空|密码位数不正确'
+            },
+            {
+                value: this.selectedShop.shop_id,
+                method: 'required|number',
+                message: '请选择一个门店|门店参数错误'
+            }
+            ]
+            return this.check(rules)
+        }
+        async init() {
+            this.selectedShop = {
+                shop_id: 0,
+                shop_name: '请选择门店...'
+            }
+            this.shops = [{
+                shop_id: 0,
+                shop_name: '请选择门店...'
+            }]
+            this.$apply()
+        }
+        async onLoad() {
+            const domain = this.wepy.$instance.state.domain
+            try {
+                const data = await Auth.company(domain)
+                this.company.name = data.name
+                if (data.logo_url) {
+                    this.company.logo_url = data.logo_url
+                }
+                this.$apply()
+            } catch (error) {
+                console.log('未获取到公司信息')
+            }
+            console.log(this.company)
+        }
+        imgError() {
+            this.company.logo_url = '../../assets/img/ueosoft.png'
+        }
+        methods = {
+            async confirm() {
+                if (this.validate()) {
+                    try {
+                        const res = await Auth.login(this.input.username, this.input.password, this.selectedShop.shop_id)
+                        if (res.token) {
+                            this.$route('reLaunch', '../home/index')
+                        }
+                    } catch (e) {
+                        this.tips('账号或密码错误')
+                    }
+                }
+            },
+            switchPassword() {
+                this.password.isCipher = !this.password.isCipher
+            },
+            selectShop(e) {
+                this.selectedShop = this.shops[e.detail.value]
+            },
+            clear(key) {
+                this.input[key] = ''
+            },
+            async fetchShops() {
+                if (this.isEmpty(this.input.username)) {
+                    return false
+                }
+                if (this.historyUsername != this.input.username) {
+                    this.$Tip.loading('正在获取门店列表...')
+                    try {
+                        this.shops = await Auth.getShopsByUserName(this.input.username)
+                        this.selectedShop = this.shops[0]
+                    } catch (err) {
+                        this.init()
+                    } finally {
+                        this.historyUsername = this.input.username
+                        this.$apply()
+                        this.$Tip.loaded()
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+<style lang="less">
+    page {
+        height: 100%;
+    }
+    /**背景图**/
+    .login_bg {
+        width: 100%;
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        z-index: 1;
+    }
+    .logo {
+        width: 100%;
+        text-align: center;
+        display: block;
+        height: 100px;
+        position: fixed;
+        z-index: 9;
+        left: 0;
+        top: 15%;
+    }
+    .logo image {
+        max-width: 60%;
+        max-height: 140px;
+    }
+    /**登录框**/
+    .login_box {
+        width: 76%;
+        left: 12%;
+        top: 46%;
+        padding: 5px 0px 6px 0px;
+        position: fixed;
+        z-index: 3;
+    }
+    .input_box {
+        padding-bottom: 5px;
+        width: 100%;
+        margin: 5px 0px;
+        border-bottom: 1px solid #76c1f6;
+    }
+    .input_box_d .sname {
+        display: block;
+        margin-left: 4.6%;
+    }
+    .input_box_d .td {
+        color: #D1ECFC;
+        font-size: 13px;
+        margin-left: 4.6%;
+    }
+    .input_box .left {
+        width: 22%;
+        text-align: center;
+    }
+    .input_box .right {
+        width: 30px;
+        text-align: center;
+    }
+    .input_box .td {
+        vertical-align: middle;
+    }
+    .input_box .iconfont {
+        color: #D1ECFC;
+        font-size: 20px;
+    }
+    .input_box .input {
+        width: 89%;
+        height: 20px;
+        line-height: 20px;
+        color: #D1ECFC;
+        font-size: 14px;
+        padding: 0px 5%;
+    }
+    .translucent {
+        opacity: 0.5;
+        font-size: 16px;
+    }
+    /**登录按钮**/
+    button[disabled] {
+        color: #c4e3f7;
+        background: #44ABF7;
+        border: none;
+
+    }
+    .btn {
+        width: 100%;
+        height: 42px;
+        line-height: 42px;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 15px;
+        color: #28b1e7;
+        background-color: #ffffff;
+        margin-top: 20px;
+        border: none;
+    }
+    .focustext {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+    }
+</style>

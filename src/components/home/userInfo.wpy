@@ -1,0 +1,38 @@
+<template>
+    <div class='td head_td'>
+        <div class='table head_table'>
+            <div class='td'>
+                <div class='user_name' @tap="assisant">{{ info.username }}{{ info.fullname ? '（'+ info.fullname +'）' : ''}} - {{info.role_name}}</div>
+                <div class='user_jurisdiction'><span class="iconfont icon-dibiao"></span>{{info.shop_name}}</div>
+            </div>
+            <div class='td'>
+                <span class="iconfont icon-shezhi" @tap="setting"></span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import wepy from 'wepy'
+    export default class userInfo extends wepy.component {
+        props = {
+            info: {
+                type: Object,
+                default: {
+                    username: '尚未登录',
+                    rule_name: '',
+                    company: '',
+                    address: ''
+                }
+            }
+        }
+        methods = {
+            setting() {
+                this.$root.$navigate('../../pages/setting/index')
+            },
+            assisant() {
+                this.$root.$navigate('../../pages/assisant/index')
+            }
+        }
+    }
+</script>

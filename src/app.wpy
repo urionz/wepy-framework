@@ -1,0 +1,64 @@
+<style lang="less">
+    @import "assets/wxss/style.wxss";
+</style>
+
+<script>
+    import wepy from 'wepy'
+    import 'wepy-async-function'
+    // 引入全部工具到wepy实例
+    import './utils'
+    export default class extends wepy.app {
+        config = {
+            pages: [
+                'pages/passport/login', // 登录入口
+                'pages/home/index', // 首页
+            ],
+            window: {
+                backgroundTextStyle: 'light',
+                navigationBarBackgroundColor: '#23a5e4',
+                navigationBarTitleText: 'wepy-framework',
+                navigationBarTextStyle: 'light'
+            },
+            networkTimeout: {
+                'request': 'GLOBAL_TIMEOUT'
+            }
+        }
+        jumpfix([delay = 500]) {
+            let jumping = false
+            const fixApi = ['navigateTo', 'redirectTo', 'switchTab', 'navigateBack']
+            fixApi.forEach(api => {
+                this.intercept(api, {
+                    config(p) {
+                        if (!jumping) {
+                            jumping = true
+                            setTimeout(() => {
+                                jumping = false
+                            }, delay)
+                            return p
+                        }
+                        return false
+                    }
+                })
+            })
+        }
+        state = {}
+        constructor() {
+            super()
+            // 注册请求中间件
+            this.use('requestfix')
+            // 注册promise中间件
+            this.use('promisify')
+            // 修复全部跳转api
+            this.use('jumpfix')
+        }
+        async onLaunch() {
+            this.updateStore()
+        }
+        updateStore() {
+            const res = wepy.getStorageInfoSync()
+            res.keys.map(key => {
+                this.state[key] = wepy.getStorageSync(key)
+            })
+        }
+    }
+</script>

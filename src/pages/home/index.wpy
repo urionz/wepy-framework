@@ -1,0 +1,208 @@
+<template>
+    <div class='box'>
+        <div class='table home_box'>
+            <div class='tr tr_a'>
+                <userInfo :info.sync="userInfo" />
+            </div>
+            <div class='tr tr_b'>
+                <report :report.sync="report" />
+            </div>
+            <div class='tr'>
+                <div class='td'>
+                    <feature/>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import {
+        Report,
+        Auth
+    } from '../../api'
+    import page from '../authenticate'
+    import feature from '../../components/home/feature'
+    import userInfo from '../../components/home/userInfo'
+    import report from '../../components/home/report'
+    export default class Home extends page {
+        config = {
+            enablePullDownRefresh: true,
+            navigationBarTitleText: 'example',
+            backgroundColor: '#23a5e4'
+        }
+        components = {
+            feature,
+            userInfo,
+            report
+        }
+        data = {
+            userInfo: {},
+            report: {}
+        }
+        onPullDownRefresh() {
+            this.onLoad()
+            this.wepy.stopPullDownRefresh()
+        }
+        async onLoad() {
+            this.userInfo = this.wepy.$instance.state.user
+        }
+    }
+</script>
+
+<style lang="less">
+    page {
+        background: #ffffff;
+    }
+    .home_box {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+    .head_table {
+        width: 90%;
+        margin: auto;
+    }
+    .head_table .td {
+        vertical-align: top;
+        text-align: left;
+    }
+    .head_table .icon-shezhi {
+        font-size: 26px;
+        float: right;
+        color: #D3FFF7;
+    }
+    /*公司信息*/
+    .tr_a {
+        width: 100%;
+    }
+    .tr_a {
+        width: 100%;
+        height: 13.5%;
+        background-color: #23a5e4;
+        text-align: center;
+    }
+    .tr_a .head_td {
+        vertical-align: middle;
+        padding: 10px;
+    }
+    .tr_a .table {
+        margin: auto;
+    }
+    .user_name,
+    .company_name,
+    .user_jurisdiction,
+    .user_identity {
+        display: block;
+        width: 100%;
+        color: #ffffff;
+    }
+    .company_name,
+    .user_name {
+        font-size: 15px;
+    }
+    .company_name {
+        margin-top: 10px;
+    }
+    .company_address {
+        display: inline-block;
+        color: #81d4fa;
+    }
+    .company_address_box {
+        border-top: 1px solid #81d4fa;
+    }
+    .company_name,
+    .company_address {
+        padding: 3px;
+    }
+    .company_address {
+        font-size: 12px;
+    }
+    .identity_item {
+        display: inline-block;
+        border: 1px solid #ffffff;
+        font-size: 10px;
+        padding: 2px 15px;
+        color: #ffffff;
+        border-radius: 50px;
+        margin-top: 5px;
+    }
+    /*今日统计*/
+    .tr_b {
+        height: 10%;
+    }
+    .statistics {
+        width: 99%;
+        margin: auto;
+        border-bottom: 1px solid #eeeeee;
+    }
+    .statistics .td {
+        width: 33%;
+        padding: 15px 0px;
+        text-align: center;
+    }
+    .statistics .td:first-child {
+        border-right: 1px solid #eeeeee;
+    }
+    .statistics .td:last-child {
+        border-left: 1px solid #eeeeee;
+    }
+    .statistics .td span {
+        display: block;
+        width: 100%;
+        font-size: 34rpx;
+        color: #ff2222;
+    }
+    .statistics .td b {
+        display: block;
+        font-size: 26rpx;
+        margin-top: 5px;
+        font-weight: normal;
+    }
+    /*管理项目*/
+    .icon_list {
+        width: 99%;
+        margin: auto;
+        border-bottom: 1px solid #eeeeee;
+    }
+    .icon_list .td {
+        width: 33%;
+        padding: 5px 0px;
+        text-align: center;
+    }
+    .icon_list .td span {
+        display: block;
+        width: 100%;
+        color: #ff2222;
+    }
+    .icon_list .td b {
+        font-weight: normal;
+    }
+    .icon_list {
+        height: 100%;
+        border-bottom: none;
+    }
+    .icon_list .td {
+        vertical-align: middle;
+        border: none;
+    }
+    .icon_list .td .item {
+        width: 33.333333333%;
+        height: 25%;
+        float: left;
+    }
+    .icon_list .td span {
+        font-size: 68rpx;
+        margin-bottom: 5px;
+        color: #229bec;
+    }
+    .icon_list .td b {
+        color: #333333;
+    }
+    .icon_list .disabled span {
+        color: #dddddd;
+    }
+    .icon_list .disabled b {
+        color: #dddddd;
+    }
+</style>

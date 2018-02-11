@@ -1,0 +1,34 @@
+<template>
+    <div class='td'>
+        <div class='table statistics'>
+            <div class='td'>
+                <span>{{ report.money }}</span>
+                <b>今日销售额</b>
+            </div>
+            <div class='td'>
+                <span>{{ report.user_num }}</span>
+                <b>今日新增会员</b>
+            </div>
+            <div class='td'>
+                <span>{{ report.order_num }}</span>
+                <b>今日订单量</b>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import wepy from 'wepy'
+    export default class report extends wepy.component {
+        props = {
+            report: {
+                type: Object,
+                default: {
+                    money: 0.00,
+                    user_num: 0,
+                    order_num: 0
+                }
+            }
+        }
+    }
+</script>

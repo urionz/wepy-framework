@@ -1,0 +1,134 @@
+<template>
+    <div class='table icon_list'>
+        <div class='tr'>
+            <div class='td'>
+                <repeat for="{{ feature }}" key="index" index="index" item="f">
+                    <a class="item table {{ f.open ? '' : 'disabled' }}" id="{{ index }}" @tap.stop="navigateTo({{ f }})">
+                        <div class='td'>
+                            <span class="iconfont {{ f.icon }}"></span>
+                            <b>{{ f.name }}</b>
+                        </div>
+                    </a>
+                </repeat>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import wepy from 'wepy'
+    export default class feature extends wepy.component {
+        props = {
+            feature: {
+                type: Array,
+                default: [{
+                    name: '收银',
+                    icon: 'icon-shouyin',
+                    url: '/pages/checkstand/choose',
+                    open: true,
+                    click: 0,
+                    type: 'cash'
+                },
+                {
+                    name: '补货',
+                    icon: 'icon-caigou',
+                    url: '/pages/purchase/index?go=home',
+                    open: true,
+                    click: 0,
+                    type: 'purchase'
+                },
+                {
+                    name: '报表',
+                    icon: 'icon-baobiao',
+                    url: '/pages/report/index',
+                    open: true,
+                    click: 0,
+                    type: 'report'
+                },
+                {
+                    name: '财务',
+                    icon: 'icon-caiwuguanlim',
+                    url: '',
+                    open: false,
+                    click: 0,
+                    type: 'finance'
+                },
+                {
+                    name: '线上订单',
+                    icon: 'icon-xianshangdingdan',
+                    url: '',
+                    open: false,
+                    click: 0,
+                    type: 'order'
+                },
+                {
+                    name: '调拨',
+                    icon: 'icon-diaobo',
+                    url: '/pages/allocate/index',
+                    open: true,
+                    click: 0,
+                    type: 'allocate'
+                },
+                {
+                    name: '预约',
+                    icon: 'icon-shafa',
+                    url: '',
+                    open: false,
+                    click: 0,
+                    type: 'appointment'
+                },
+                {
+                    name: '交易查询',
+                    icon: 'icon-jiaoyichaxun',
+                    url: '/pages/order/index',
+                    open: true,
+                    click: 0,
+                    type: 'transact'
+                },
+                {
+                    name: '我的客户',
+                    icon: 'icon-kehu',
+                    url: '/pages/assisant/customer/list',
+                    open: true,
+                    click: 0,
+                    type: 'handover'
+                },
+                {
+                    name: '盘点',
+                    icon: 'icon-pandian',
+                    url: '/pages/inventorys/index',
+                    open: true,
+                    click: 0,
+                    type: 'stock'
+                },
+                {
+                    name: '账号管理',
+                    icon: 'icon-zhanghaoguanli',
+                    url: '/pages/account/index',
+                    open: true,
+                    click: 0,
+                    type: 'account'
+                },
+                {
+                    name: '推广会员',
+                    icon: 'icon-erweima',
+                    url: '/pages/assisant/qrcode',
+                    open: true,
+                    click: 0,
+                    type: 'register'
+                }
+                ],
+                twoWay: true
+            }
+        }
+        methods = {
+            navigateTo(item) {
+                if (item.open) {
+                    this.$root.$navigate(item.url)
+                } else {
+                    this.$Tip.alert('尚未开放')
+                }
+            }
+        }
+    }
+</script>
